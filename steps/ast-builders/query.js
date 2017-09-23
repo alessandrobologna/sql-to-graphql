@@ -6,7 +6,8 @@ var getPrimaryKey = require('../../util/get-primary-key');
 var typeMap = {
     string: 'GraphQLString',
     integer: 'GraphQLInt',
-    float: 'GraphQLFloat'
+    float: 'GraphQLFloat',
+    timestamp: 'GraphQLDateTime'
 };
 
 module.exports = function buildQuery(type, data, opts) {

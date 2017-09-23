@@ -11,7 +11,8 @@ var undef;
 module.exports = function mysqlBackend(opts, callback) {
     var mysql = knex({
         client: 'mysql',
-        connection: opts
+        connection: opts,
+        pool: { min: 0, max: 10 }
     });
 
     process.nextTick(callback);
@@ -54,7 +55,7 @@ module.exports = function mysqlBackend(opts, callback) {
         },
 
         getTableStructure: function(tableName, cb) {
-            mysql
+            var result = mysql
                 .select([
                     'table_name',
                     'column_name',

@@ -24,7 +24,9 @@ function findRelationships(adapter, model, models, callback) {
     }
 
     var done = after(model.references.length, callback);
+    console.log("finding relationships for " + model.name.green)
     model.references.forEach(function(ref) {
+        console.log(" > " +  ref.refField.blue)
         var referenceColumn = getUnaliasedField(ref.refField, model);
         adapter.hasDuplicateValues(model.table, referenceColumn, function(err, hasDupes) {
             if (err) {

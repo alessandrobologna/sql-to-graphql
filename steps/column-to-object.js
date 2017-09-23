@@ -12,13 +12,12 @@ function columnToObject(col, opts) {
         originalName: col.columnName,
         description: col.columnComment || undef,
         isNullable: col.isNullable === 'YES',
-        isPrimaryKey: col.columnKey === 'PRI'
+        isPrimaryKey: col.columnKey === 'PRI' && col.ordinalPosition === 1
     }, getType(col));
 
     if (column.isPrimaryKey && !opts.unaliasedPrimaryKeys) {
         column.name = 'id';
     }
-
     return column;
 }
 
@@ -104,9 +103,12 @@ function getType(col) {
         case 'tinyint':
         case 'smallint':
         case 'mediumint':
-        case 'timestamp':
             return { type: 'integer' };
-
+        
+        // Timestamps
+            case 'timestamp':
+            return { type: 'timestamp' };
+        
         // Floats
         case 'real':
         case 'float':

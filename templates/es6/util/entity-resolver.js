@@ -13,10 +13,10 @@ export default function getResolver(type) {
     }
 
     const pkAlias = typeData.primaryKey ? typeData.aliases[typeData.primaryKey] : null;
-    return function resolveEntity(parent, args, ast) {
+    return function resolveEntity(parent, args, context, ast) {
         const isList = ast.returnType instanceof GraphQLList;
         const clauses = getClauses(ast, args, typeData.aliases);
-        const selection = getSelectionSet(type, ast.fieldASTs[0], typeData.aliases, typeData.referenceMap);
+        const selection = getSelectionSet(type, ast.fieldNodes[0], typeData.aliases, typeData.referenceMap);
         const hasPkSelected = (
             typeData.primaryKey &&
             selection.some(item => item.indexOf(typeData.primaryKey) === 0)

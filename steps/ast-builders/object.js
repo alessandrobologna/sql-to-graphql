@@ -4,11 +4,10 @@ var b = require('ast-types').builders;
 var isPlainObject = require('lodash/lang/isPlainObject');
 
 function buildObject(obj) {
-    var fields = [], key;
-    for (key in obj) {
+    var fields = [], keys=[], key;
+    Object.keys(obj).sort().forEach(function(key){
         fields.push(b.property('init', b.literal(key), castValue(obj[key])));
-    }
-
+    })
     return b.objectExpression(fields);
 }
 

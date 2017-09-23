@@ -22,7 +22,7 @@ function tableToObject(table, opts) {
         table: table.name,
         normalizedTable: normalized,
         fields: indexBy(fields, 'name'),
-        aliasedFields: fields.reduce(function(aliases, field) {
+        aliasedFields: fields.sort().reduce(function(aliases, field) {
             if (field.name !== field.originalName) {
                 aliases[field.originalName] = field.name;
             }

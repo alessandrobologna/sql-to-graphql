@@ -10,15 +10,17 @@ export default function getConnectionResolver(type) {
         throw new Error('Type "' + type + '" not a recognized type');
     }
 
-    return function resolveConnection(parent, args, ast) {
+    
+
+    return function resolveConnection(parent, args, context, ast) {
         const parentTypeData = resolveMap[ast.parentType.name];
         const listRefField = parentTypeData.listReferences[ast.fieldName];
         const parentPk = parentTypeData.aliases[parentTypeData.primaryKey] || parentTypeData.primaryKey;
-        const edgeSelection = ast.fieldASTs[0].selectionSet.selections.reduce(edgeReducer, null);
+        const edgeSelection = ast.fieldNodes[0].selectionSet.selections.reduce(edgeReducer, null);
         const selection = getSelectionSet(type, edgeSelection, typeData.aliases, typeData.referenceMap);
         const clauses = { [listRefField]: parent[parentPk] };
 
-        const {before, after, first, last} = args;
+        const {before, after, first, last, orderBy} = args;
         let offset = 0, limit = config.edgeSize || 25;
 
         if (before && after) {
@@ -40,9 +42,15 @@ export default function getConnectionResolver(type) {
             .offset(offset)
             .limit(limit + 1);
 
+        if (orderBy) {
+            query.orderBy(orderBy.field,orderBy.direction)
+        }
         if (config.debug) {
             console.log(query.toSQL());
         }
+        console.log(query.toSQL());
+
+        query
 
         return query.then(function(result) {
             let hasNextPage = result.length > limit;
@@ -75,6 +83,7 @@ export default function getConnectionResolver(type) {
             }
 
             return {
+                count: result.length,
                 edges: edges,
                 pageInfo: {
                     startCursor: edges[0].cursor,
@@ -86,6 +95,7 @@ export default function getConnectionResolver(type) {
         });
     };
 }
+
 
 var PREFIX = 'Connection:';
 function offsetToCursor(offset) {

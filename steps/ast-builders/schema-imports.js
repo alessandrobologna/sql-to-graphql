@@ -9,7 +9,8 @@ var getPrimaryKey = require('../../util/get-primary-key');
 var typeMap = {
     string: 'GraphQLString',
     integer: 'GraphQLInt',
-    float: 'GraphQLFloat'
+    float: 'GraphQLFloat',
+    timestamp : 'GraphQLDateTime'
 };
 
 function generateSchemaImports(data, opts) {
@@ -19,7 +20,8 @@ function generateSchemaImports(data, opts) {
             flatten(pluck(data.types, 'imports')).concat(
                 pluck(data.types, 'varName')
             )
-        );
+        ).sort();
+       
     }
 
     var types = imports.filter(not(isGraphQL));
@@ -106,7 +108,7 @@ function cjsImport(graphql, types, opts) {
             b.identifier('resolveMap'),
             b.callExpression(
                 b.identifier('require'),
-                [b.literal('./resolve-map')]
+                [b.literal('./util/resolve-map')]
             )
         )]
     ));
@@ -198,7 +200,7 @@ function es6Import(graphql, types, opts) {
 
     declarations.push(b.importDeclaration(
         [importSpecifier('registerType')],
-        b.literal('./resolve-map')
+        b.literal('./util/resolve-map')
     ));
 
     declarations.push(b.importDeclaration(

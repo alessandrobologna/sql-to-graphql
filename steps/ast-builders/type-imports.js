@@ -232,7 +232,7 @@ function es6Import(graphql, others, opts) {
     declarations.push(
         b.importDeclaration(
             resolveImports,
-            b.literal('../resolve-map')
+            b.literal('../util/resolve-map')
         )
     );
 
@@ -259,6 +259,14 @@ function es6Import(graphql, others, opts) {
             [importSpecifier('nodeInterface')],
             b.literal('./Node')
         ));
+
+        declarations.push(
+            b.importDeclaration(
+                [importSpecifier('sqlConnectionArgs')],
+                b.literal('../util/sqlconnection-args')
+            )
+        );
+    
     }
 
     declarations = declarations.concat(
@@ -283,14 +291,19 @@ function importSpecifier(name, def) {
 }
 
 function importDeclaration(item) {
+    if ('GraphQLDateTime' === item) {
+        return b.importDeclaration (
+            [importSpecifier('GraphQLDateTime'),importSpecifier('GraphQLDate'),importSpecifier('GraphQLTime')],
+                b.literal('graphql-iso-date') 
+        );
+    }
     return b.importDeclaration(
-        [importSpecifier(item, true)],
-        b.literal('./' + item)
+        [importSpecifier(item, true)], b.literal('./' + item)
     );
 }
 
 function isGraphQL(name) {
-    return name.indexOf('GraphQL') === 0;
+    return name.indexOf('GraphQL') === 0 && name !== 'GraphQLDateTime';
 }
 
 function not(fn) {

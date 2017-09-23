@@ -16,7 +16,8 @@ var typeMap = {
     string: 'GraphQLString',
     integer: 'GraphQLInt',
     float: 'GraphQLFloat',
-    boolean: 'GraphQLBoolean'
+    boolean: 'GraphQLBoolean',
+    timestamp: 'GraphQLDateTime'
 };
 
 function exclude(arr, val) {
@@ -45,17 +46,16 @@ function generateTypes(data, opts) {
 
     function generateType(name, model) {
         var fields = [], refs;
-
-        for (var fieldName in model.fields) {
+        Object.keys(model.fields).sort().forEach(function(fieldName) {
             fields.push(generateField(model.fields[fieldName], null, name, model));
-
             refs = where(model.references, { refField: fieldName });
             for (var i = 0; i < refs.length; i++) {
                 fields.push(generateReferenceField(model.fields[fieldName], refs[i]));
             }
-        }
-
-        model.listReferences.forEach(function(ref) {
+        })         
+        model.listReferences.sort(function(a,b){
+            return a.field > b.field
+        }).forEach(function(ref) {
             fields.push(generateListReferenceField(ref));
         });
 
@@ -167,7 +167,7 @@ function generateTypes(data, opts) {
                 b.identifier('getConnectionResolver'),
                 [b.literal(reference.model.name)]
             ),
-            args: b.property('init', b.identifier('args'), b.identifier('connectionArgs'))
+            args: b.property('init', b.identifier('args'), b.identifier('sqlConnectionArgs'))
         }, b.callExpression(
             b.identifier('getConnection'),
             [b.literal(reference.model.name)]

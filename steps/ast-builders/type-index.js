@@ -6,7 +6,7 @@ var pluck = require('lodash/collection/pluck');
 var buildExports = require('./exports');
 
 module.exports = function buildTypeIndex(data, opts) {
-    var types = pluck(data.types, 'varName');
+    var types = pluck(data.types, 'varName').sort();
     var theImports = types.map(opts.es6 ? es6Import : cjsImport);
     var theExports = (opts.es6 ? es6Export : cjsExport)(types);
 

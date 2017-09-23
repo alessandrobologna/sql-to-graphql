@@ -9,12 +9,18 @@ var buildFieldWrapperFunction = require('./field-wrapper-function');
 
 module.exports = function(data, opts) {
     var queryFields = [];
+    var types = []
     if (opts.relay) {
         queryFields.push(b.property(
             'init',
             b.identifier('node'),
             b.identifier('nodeField')
         ));
+        types = map(data.types, function(type) {
+            return b.identifier('types.' + type.varName)
+        }).sort(function(a,b){
+            return a.name > b.name
+        })
     } else {
         queryFields = map(data.types, function(type) {
             return b.property(
@@ -22,13 +28,19 @@ module.exports = function(data, opts) {
                 b.identifier(camelCase(type.name)),
                 buildQuery(type, data, opts)
             );
+        }).sort(function(a,b) {
+            return a.key.name > b.key.name
         });
     }
-
     return buildVar('schema',
         b.newExpression(
             b.identifier('GraphQLSchema'),
             [b.objectExpression([
+                b.property(
+                    'init',
+                    b.identifier('types'),
+                    b.arrayExpression(types)
+                ),
                 b.property(
                     'init',
                     b.identifier('query'),

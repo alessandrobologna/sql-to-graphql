@@ -13,6 +13,7 @@ var buildSchemaModule = require('./ast-builders/schema-module');
 var buildNodeDefinitions = require('./ast-builders/node-definitions');
 var updatePackageManifest = require('./update-package');
 var copyTemplates = require('./copy-templates');
+var colors = require('colors');
 
 function outputData(data, opts, callback) {
     if (opts.relay) {
@@ -45,6 +46,7 @@ function outputData(data, opts, callback) {
                 code = recast.prettyPrint(ast, opts).code;
 
                 fs.writeFileSync(path.join(typesDir, data.types[type].varName + '.js'), code);
+                console.log('- created type ' + type.yellow)
             }
 
             // Write a type index
@@ -58,22 +60,21 @@ function outputData(data, opts, callback) {
                 code = recast.prettyPrint(ast, opts).code;
                 fs.writeFileSync(path.join(typesDir, 'Node.js'), code);
             }
-        });
+        })
 
         // Build and write the resolve map
         var resolveMap = recast.prettyPrint(buildResolveMap(data, opts), opts).code;
         fs.writeFileSync(path.join(outputDir, 'resolve-map.js'), resolveMap);
-
         // Copy templates ("static" ones, should probably be named something else)
         copyTemplates(opts.es6 ? 'es6' : 'cjs', outputDir);
-
+        
         // Write the schema!
         var schemaCode = recast.prettyPrint(buildSchemaModule(data, opts), opts).code;
         fs.writeFileSync(path.join(outputDir, 'schema.js'), schemaCode);
-
+        
         // Update package.json file with any necessary changes
         updatePackageManifest(opts);
-
+        
         callback();
     });
 }

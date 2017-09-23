@@ -1,4 +1,6 @@
 import Hapi from 'hapi';
+import GraphQL from 'hapi-graphql';
+import myschema from './schema';
 
 const server = new Hapi.Server();
 server.connection({ port: 3000 });
@@ -31,6 +33,20 @@ server.route({
     }
 });
 
-server.start(function() {
-    console.log('Server running at:', server.info.uri);
-});
+
+server.register({
+    register: GraphQL,
+    options: {
+      query: {
+          schema: myschema,
+          graphiql:true
+      }, route: {
+        path: '/graphiql',
+        config: {}
+      }
+      }
+  }, () =>
+    server.start(() =>
+      console.log('Server running at:', server.info.uri)
+    )
+)
