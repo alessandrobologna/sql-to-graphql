@@ -25,6 +25,7 @@ var steps = {
 
 // Force recast to throw away whitespace information
 opts.reuseWhitespace = false;
+opts.es6 = true
 
 if (opts.backend === 'sqlite' && !opts.database) {
     opts.database = 'main';
@@ -150,21 +151,7 @@ function onTableDataCollected(err, data) {
 
 // When the data has been written to stdout/files
 function onDataOutput() {
-    if (!opts.outputDir) {
-        return;
-    }
-
-    if (opts.interactive) {
-        console.log('\n\n\n');
-    }
-
-    var dir = path.resolve(opts.outputDir);
-    console.log('Demo app generated in ' + dir + '. To run:');
-    console.log('cd ' + dir);
-    console.log('npm install');
-    console.log('npm start');
-    console.log();
-    console.log('Then point your browser at http://localhost:3000');
+    // do nothing
 }
 
 function bail(err) {

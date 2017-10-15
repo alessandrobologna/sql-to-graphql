@@ -20,7 +20,7 @@ export default function getConnectionResolver(type) {
         const selection = getSelectionSet(type, edgeSelection, typeData.aliases, typeData.referenceMap);
         const clauses = { [listRefField]: parent[parentPk] };
 
-        const {before, after, first, last, orderBy} = args;
+        const {before, after, first, last, orderBy, where} = args;
         let offset = 0, limit = config.edgeSize || 25;
 
         if (before && after) {
@@ -33,6 +33,10 @@ export default function getConnectionResolver(type) {
         } else if (before) {
             limit = parseInt(last || config.edgeSize || 25, 10);
             offset = Math.max(0, (getOffset(before) || 0) - limit);
+        }
+
+        if (where) {
+            clauses[where.field]=where.value
         }
 
         const query = db()
@@ -48,9 +52,6 @@ export default function getConnectionResolver(type) {
         if (config.debug) {
             console.log(query.toSQL());
         }
-        console.log(query.toSQL());
-
-        query
 
         return query.then(function(result) {
             let hasNextPage = result.length > limit;

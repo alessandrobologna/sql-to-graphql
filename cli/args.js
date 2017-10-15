@@ -71,11 +71,6 @@ module.exports = require('yargs')
         describe: 'Print output into separate files within the given directory',
         type: 'string'
     })
-    .option('es6', {
-        describe: 'Output in ES6 format (const, import et all)',
-        type: 'boolean',
-        default: false
-    })
     .option('use-tabs', {
         describe: 'Use tabs for indentation',
         type: 'boolean',

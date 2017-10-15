@@ -8,6 +8,7 @@ var capitalize = require('lodash/string/capitalize');
 var pluralize = require('pluralize');
 
 module.exports = function findOneToManyRelationships(adapter, models, callback) {
+    console.log("\n\nStarting generation...")
     var tasks = Object.keys(models).reduce(function(tasklist, model) {
         tasklist[model] = function(cb) {
             findRelationships(adapter, models[model], models, cb);
@@ -24,9 +25,9 @@ function findRelationships(adapter, model, models, callback) {
     }
 
     var done = after(model.references.length, callback);
-    console.log("finding relationships for " + model.name.green)
+    console.log("\n - finding relationships for " + model.name.green)
     model.references.forEach(function(ref) {
-        console.log(" > " +  ref.refField.blue)
+        console.log("    > " +  ref.refField.yellow)
         var referenceColumn = getUnaliasedField(ref.refField, model);
         adapter.hasDuplicateValues(model.table, referenceColumn, function(err, hasDupes) {
             if (err) {

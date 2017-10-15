@@ -6,12 +6,10 @@ var merge = require('lodash/object/merge');
 var recast = require('recast');
 var mkdirp = require('mkdirp');
 var buildType = require('./ast-builders/type');
-var buildConfig = require('./ast-builders/config');
 var buildTypeIndex = require('./ast-builders/type-index');
 var buildResolveMap = require('./ast-builders/resolve-map');
 var buildSchemaModule = require('./ast-builders/schema-module');
 var buildNodeDefinitions = require('./ast-builders/node-definitions');
-var updatePackageManifest = require('./update-package');
 var copyTemplates = require('./copy-templates');
 var colors = require('colors');
 
@@ -21,7 +19,7 @@ function outputData(data, opts, callback) {
     }
 
     // Output to a directory, in other words: split stuff up
-    var outputDir = path.resolve(opts.outputDir);
+    var outputDir = path.resolve(opts.outputDir + "/src");
     var typesDir = path.join(outputDir, 'types');
     var configDir = path.join(outputDir, 'config');
     mkdirp(configDir, function(err) {
@@ -30,8 +28,8 @@ function outputData(data, opts, callback) {
         }
 
         // Write the configuration file
-        var conf = recast.prettyPrint(buildConfig(opts), opts).code;
-        fs.writeFileSync(path.join(configDir, 'config.js'), conf);
+        // var conf = recast.prettyPrint(buildConfig(opts), opts).code;
+        // fs.writeFileSync(path.join(configDir, 'config.js'), conf);
 
         // Write types
         mkdirp(typesDir, function(typesErr) {
@@ -66,15 +64,12 @@ function outputData(data, opts, callback) {
         var resolveMap = recast.prettyPrint(buildResolveMap(data, opts), opts).code;
         fs.writeFileSync(path.join(outputDir, 'resolve-map.js'), resolveMap);
         // Copy templates ("static" ones, should probably be named something else)
-        copyTemplates(opts.es6 ? 'es6' : 'cjs', outputDir);
+        copyTemplates(opts.outputDir);
         
         // Write the schema!
         var schemaCode = recast.prettyPrint(buildSchemaModule(data, opts), opts).code;
         fs.writeFileSync(path.join(outputDir, 'schema.js'), schemaCode);
-        
-        // Update package.json file with any necessary changes
-        updatePackageManifest(opts);
-        
+                
         callback();
     });
 }

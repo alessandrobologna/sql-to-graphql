@@ -12,7 +12,7 @@ module.exports = function mysqlBackend(opts, callback) {
     var mysql = knex({
         client: 'mysql',
         connection: opts,
-        pool: { min: 0, max: 10 }
+        pool: { min: 16, max: 32 }
     });
 
     process.nextTick(callback);

@@ -1,0 +1,31 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: {{SERVICE}}
+  namespace: {{NAMESPACE}}
+spec:
+  replicas: 3
+  template:
+    metadata:
+      labels:
+        name: {{SERVICE}}
+    spec:
+      containers:
+      - name: graphql
+        image: {{PUBLISH_TAG}}
+        imagePullPolicy: Always
+        env:
+        - name: DB_HOST
+          value: {{DB_HOST}}
+        - name: DB
+          value: {{DB}}
+        - name: DB_USER
+          valueFrom:
+            secretKeyRef:
+              name: secrets
+              key: user
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: secrets
+              key: password

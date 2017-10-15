@@ -27,9 +27,9 @@ export function getConnection(type) {
         connections[type] = connectionDefinitions({
             connectionFields: {
                 count: {
-                type: GraphQLInt,
-                description: 'Total number of tags',
-                resolve: connection => connection.count,
+                    type: GraphQLInt,
+                    description: 'Count of the returned nodes',
+                    resolve: connection => connection.count,
                 },
             },
 
