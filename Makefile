@@ -29,9 +29,14 @@ ifndef NAMESPACE
 	$(error SERVICE is undefined)
 endif
 
-build: __check  ## Build scaffolded app.
+generate: __check  ## Build scaffolded app.
 	@NAMESPACE="$(NAMESPACE)" SERVICE="$(SERVICE)" TABLES="$(TABLES)" sh -c ' \
 		node cli.js --database "$$DB" --host "$$DB_HOST" --output-dir "$$SERVICE-$$NAMESPACE" --user "$$DB_USER" --password "$$DB_PASSWORD" --relay --table $$TABLES && \
-		envtpl < Makefile.template.mk > $$SERVICE-$$NAMESPACE/Makefile \
-	'
+		envtpl < Makefile.template.mk > $$SERVICE-$$NAMESPACE/Makefile && \
+	echo "-----------------------" &&\
+	echo "Generation complete." &&\
+	echo "Type:" &&\
+	echo "  cd $$SERVICE-$$NAMESPACE" &&\
+	echo "  make publish deploy" &&\
+	echo "to deploy $$SERVICE to k8s"'
 
